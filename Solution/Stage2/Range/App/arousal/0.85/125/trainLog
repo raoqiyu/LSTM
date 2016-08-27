@@ -1,0 +1,453 @@
+/home/admin1_417/anaconda3/bin/python "/home/admin1_417/Raoqiyu/Exp/LSTM/Solution/AVEC2015Solution (5th copy).py"
+Using gpu device 0: GeForce GTX 780 Ti
+Data :  features_video_appearance arousal
+Data :  _0.85_125_81.pkl
+Data :  load_avec2015_data_generated2
+-------------------- Loading Data --------------------
+generated_Stage2_0.85_125_81.pkl
+81 generated train examples : 81 6375
+9 original train examples : 9 7501
+9 valid  examples : 9 7501
+
+ -------------------- Building Model --------------------
+Add a BLSTM layer
+Add a avec activation layer
+
+--------------------Model Configuration--------------------
+3 layers
+Input  Layer : 1
+Hidden Layer : 1 BLSTM
+Output Layer : 1 avec_activate
+
+--------------------Model Paramter--------------------
+{'validFreq': -1, 'batch_size': 15, 'L2_penalty': None, 'patience': 10, 'learning_rate': 1e-05, 'shuffle': False, 'dispFreq': 1, 'saveFreq': 1110, 'reload_model': None, 'optimizer': <optimizer.ADADELTA object at 0x7f43bac9c550>, 'epochs': 2000, 'valid_batch_size': 5, 'saveto': 'Stage2/Range/App/arousal/0.85/125/model/', 'L1_penalty': None}
+loss : abs
+Unsupervised Pretraining
+81 9 9
+
+ -------------------- Trainig --------------------
+Before Training:
+Train Data: 0.188079 -0.0212290038781
+valid Data: 0.184485 -0.0141518909286
+Test  Data: 0.200612 -0.00926911571867
+Epoch 0
+     Update 1 Cost 15442.0634765625
+     Update 2 Cost 15315.78125
+     Update 3 Cost 14644.322265625
+     Update 4 Cost 14770.740234375
+     Update 5 Cost 14591.2275390625
+     Update 6 Cost 6121.1474609375
+
+Train Data: 0.184608 0.00194520237986
+valid Data: 0.181275 0.00127493636887
+Test  Data: 0.204762 0.00081888106315 
+
+Save model
+Saving rmse model
+Save model
+Saving ccc model
+Epoch 1
+     Update 7 Cost 15107.876953125
+     Update 8 Cost 14724.556640625
+     Update 9 Cost 14144.78515625
+     Update 10 Cost 14644.587890625
+     Update 11 Cost 14438.1513671875
+     Update 12 Cost 5958.8046875
+
+Train Data: 0.182499 0.0258845562049
+valid Data: 0.179592 0.0172983287123
+Test  Data: 0.207473 0.0103203689563 
+
+Save model
+Saving ccc model
+Epoch 2
+     Update 13 Cost 14881.529296875
+     Update 14 Cost 14304.619140625
+     Update 15 Cost 13781.8525390625
+     Update 16 Cost 14520.765625
+     Update 17 Cost 14277.4453125
+     Update 18 Cost 5820.5439453125
+
+Train Data: 0.180156 0.055695063438
+valid Data: 0.177945 0.0373040875792
+Test  Data: 0.208759 0.0217608470706 
+
+Save model
+Saving ccc model
+Epoch 3
+     Update 19 Cost 14645.458984375
+     Update 20 Cost 13932.4208984375
+     Update 21 Cost 13433.015625
+     Update 22 Cost 14318.0732421875
+     Update 23 Cost 14033.01171875
+     Update 24 Cost 5661.45263671875
+
+Train Data: 0.176588 0.098919442735
+valid Data: 0.175547 0.0662733529825
+Test  Data: 0.208645 0.0382090914365 
+
+Save model
+Saving ccc model
+Epoch 4
+     Update 25 Cost 14312.73828125
+     Update 26 Cost 13482.322265625
+     Update 27 Cost 12968.609375
+     Update 28 Cost 13944.2578125
+     Update 29 Cost 13594.275390625
+     Update 30 Cost 5410.7861328125
+
+Train Data: 0.170062 0.174242091432
+valid Data: 0.17124 0.116605027413
+Test  Data: 0.206884 0.0669195267607 
+
+Save model
+Saving ccc model
+Epoch 5
+     Update 31 Cost 13720.244140625
+     Update 32 Cost 12715.48046875
+     Update 33 Cost 12092.412109375
+     Update 34 Cost 13112.107421875
+     Update 35 Cost 12582.25
+     Update 36 Cost 4803.2158203125
+
+Train Data: 0.154007 0.356117499177
+valid Data: 0.160683 0.241234037718
+Test  Data: 0.202509 0.138566616492 
+
+Save model
+Saving rmse model
+Save model
+Saving ccc model
+Epoch 6
+     Update 37 Cost 12164.53125
+     Update 38 Cost 10403.3046875
+     Update 39 Cost 9053.271484375
+     Update 40 Cost 10465.0302734375
+     Update 41 Cost 9235.794921875
+     Update 42 Cost 3000.249267578125
+
+Train Data: 0.114079 0.699527815722
+valid Data: 0.134585 0.52770580196
+Test  Data: 0.182962 0.332395513575 
+
+Save model
+Saving rmse model
+Save model
+Saving ccc model
+Epoch 7
+     Update 43 Cost 7817.185546875
+     Update 44 Cost 7090.37548828125
+     Update 45 Cost 7865.37451171875
+     Update 46 Cost 8151.71337890625
+     Update 47 Cost 7945.48486328125
+     Update 48 Cost 2485.12255859375
+
+Train Data: 0.0903422 0.82660427534
+valid Data: 0.128413 0.619429289344
+Test  Data: 0.167926 0.438228079051 
+
+Save model
+Saving rmse model
+Save model
+Saving ccc model
+Epoch 8
+     Update 49 Cost 6047.42236328125
+     Update 50 Cost 6803.86767578125
+     Update 51 Cost 7394.35009765625
+     Update 52 Cost 7691.5224609375
+     Update 53 Cost 6982.4541015625
+     Update 54 Cost 2377.654052734375
+
+Train Data: 0.0765983 0.885050392845
+valid Data: 0.125795 0.665810830875
+Test  Data: 0.164858 0.490440982645 
+
+Save model
+Saving rmse model
+Save model
+Saving ccc model
+Epoch 9
+     Update 55 Cost 4958.865234375
+     Update 56 Cost 4285.1005859375
+     Update 57 Cost 6700.974609375
+     Update 58 Cost 6315.5751953125
+     Update 59 Cost 6358.5537109375
+     Update 60 Cost 1877.177978515625
+
+Train Data: 0.0633811 0.924203106886
+valid Data: 0.12641 0.678244834713
+Test  Data: 0.161077 0.517665867737 
+
+Save model
+Saving rmse model
+Save model
+Saving ccc model
+Epoch 10
+     Update 61 Cost 4067.1171875
+     Update 62 Cost 6138.29345703125
+     Update 63 Cost 5911.244140625
+     Update 64 Cost 5294.0166015625
+     Update 65 Cost 5066.1279296875
+     Update 66 Cost 1696.989013671875
+
+Train Data: 0.048904 0.958111953334
+valid Data: 0.12508 0.710431633355
+Test  Data: 0.161138 0.548764284597 
+
+Save model
+Saving ccc model
+Epoch 11
+     Update 67 Cost 2927.701904296875
+     Update 68 Cost 3041.608642578125
+     Update 69 Cost 5492.46826171875
+     Update 70 Cost 3595.16259765625
+     Update 71 Cost 4274.50244140625
+     Update 72 Cost 1284.2823486328125
+
+Train Data: 0.0382496 0.97546045785
+valid Data: 0.124241 0.72690942078
+Test  Data: 0.161619 0.560478839809 
+
+Save model
+Saving ccc model
+Epoch 12
+     Update 73 Cost 2157.004150390625
+     Update 74 Cost 2108.53173828125
+     Update 75 Cost 3954.955078125
+     Update 76 Cost 3874.198486328125
+     Update 77 Cost 3440.498291015625
+     Update 78 Cost 1363.990478515625
+
+Train Data: 0.0313459 0.984155591216
+valid Data: 0.121776 0.743346074523
+Test  Data: 0.16331 0.563759925764 
+
+Save model
+Saving ccc model
+Epoch 13
+     Update 79 Cost 1776.47119140625
+     Update 80 Cost 1904.5283203125
+     Update 81 Cost 5083.421875
+     Update 82 Cost 3177.849365234375
+     Update 83 Cost 3246.5283203125
+     Update 84 Cost 1312.4150390625
+
+Train Data: 0.027995 0.987771000457
+valid Data: 0.124328 0.742311418378
+Test  Data: 0.163716 0.569323047133 
+
+Save model
+Saving ccc model
+Epoch 14
+     Update 85 Cost 1639.484130859375
+     Update 86 Cost 1513.056640625
+     Update 87 Cost 1823.052734375
+     Update 88 Cost 2872.22998046875
+     Update 89 Cost 2335.143798828125
+     Update 90 Cost 1486.279296875
+
+Train Data: 0.0257671 0.989908765359
+valid Data: 0.128416 0.732945853391
+Test  Data: 0.163596 0.573652163549 
+
+Save model
+Saving ccc model
+Epoch 15
+     Update 91 Cost 1594.8599853515625
+     Update 92 Cost 2265.15185546875
+     Update 93 Cost 3682.783935546875
+     Update 94 Cost 2555.85205078125
+     Update 95 Cost 3140.2978515625
+     Update 96 Cost 1099.03515625
+
+Train Data: 0.0219845 0.992404395128
+valid Data: 0.121151 0.746051717913
+Test  Data: 0.163059 0.562527365051 
+
+Epoch 16
+     Update 97 Cost 1143.822509765625
+     Update 98 Cost 1544.894287109375
+     Update 99 Cost 4868.73291015625
+     Update 100 Cost 2536.974365234375
+     Update 101 Cost 2981.739501953125
+     Update 102 Cost 1103.8564453125
+
+Train Data: 0.0198983 0.99395030524
+valid Data: 0.123627 0.744282863254
+Test  Data: 0.16341 0.568047366686 
+
+Epoch 17
+     Update 103 Cost 1091.176513671875
+     Update 104 Cost 1155.8609619140625
+     Update 105 Cost 1431.164306640625
+     Update 106 Cost 2078.8330078125
+     Update 107 Cost 2169.220703125
+     Update 108 Cost 1326.6719970703125
+
+Train Data: 0.0202371 0.993949036082
+valid Data: 0.128147 0.736356056232
+Test  Data: 0.163908 0.57413184767 
+
+Save model
+Saving ccc model
+Epoch 18
+     Update 109 Cost 1303.029541015625
+     Update 110 Cost 2203.0595703125
+     Update 111 Cost 3161.098876953125
+     Update 112 Cost 2244.4501953125
+     Update 113 Cost 2797.1943359375
+     Update 114 Cost 1001.1131591796875
+
+Train Data: 0.0172393 0.995393775892
+valid Data: 0.120503 0.748221098978
+Test  Data: 0.163133 0.561182658897 
+
+Epoch 19
+     Update 115 Cost 908.6189575195312
+     Update 116 Cost 2077.6279296875
+     Update 117 Cost 3903.8251953125
+     Update 118 Cost 2431.9287109375
+     Update 119 Cost 2483.34619140625
+     Update 120 Cost 1077.9892578125
+
+Train Data: 0.0159082 0.996177312189
+valid Data: 0.124707 0.740327430943
+Test  Data: 0.162916 0.568280215424 
+
+Epoch 20
+     Update 121 Cost 870.3084106445312
+     Update 122 Cost 2085.6142578125
+     Update 123 Cost 3010.77197265625
+     Update 124 Cost 2093.20458984375
+     Update 125 Cost 2658.14453125
+     Update 126 Cost 941.0046997070312
+
+Train Data: 0.0150878 0.996499089144
+valid Data: 0.120561 0.748529687637
+Test  Data: 0.163155 0.561323482419 
+
+Epoch 21
+     Update 127 Cost 791.5382080078125
+     Update 128 Cost 2107.9384765625
+     Update 129 Cost 3534.029296875
+     Update 130 Cost 2085.397705078125
+     Update 131 Cost 2482.8837890625
+     Update 132 Cost 987.8389892578125
+
+Train Data: 0.0138539 0.997111532363
+valid Data: 0.124079 0.741933302824
+Test  Data: 0.162943 0.567384143763 
+
+Epoch 22
+     Update 133 Cost 732.1943359375
+     Update 134 Cost 1675.5010986328125
+     Update 135 Cost 2966.385498046875
+     Update 136 Cost 1863.1302490234375
+     Update 137 Cost 2672.314697265625
+     Update 138 Cost 853.6647338867188
+
+Train Data: 0.0131597 0.997355304457
+valid Data: 0.121272 0.746778296301
+Test  Data: 0.162978 0.56231618259 
+
+Epoch 23
+     Update 139 Cost 627.798828125
+     Update 140 Cost 1450.11474609375
+     Update 141 Cost 3804.16650390625
+     Update 142 Cost 2053.464111328125
+     Update 143 Cost 2524.14990234375
+     Update 144 Cost 899.87744140625
+
+Train Data: 0.0118285 0.997916781387
+valid Data: 0.123747 0.744286510186
+Test  Data: 0.163296 0.567907208929 
+
+Epoch 24
+     Update 145 Cost 641.7568359375
+     Update 146 Cost 991.5103759765625
+     Update 147 Cost 1245.29736328125
+     Update 148 Cost 3392.1953125
+     Update 149 Cost 1617.66943359375
+     Update 150 Cost 721.9863891601562
+
+Train Data: 0.0131091 0.997352805196
+valid Data: 0.122139 0.741059484343
+Test  Data: 0.16218 0.561053712526 
+
+Epoch 25
+     Update 151 Cost 612.0127563476562
+     Update 152 Cost 2838.644775390625
+     Update 153 Cost 1838.0177001953125
+     Update 154 Cost 2593.5478515625
+     Update 155 Cost 1846.097412109375
+     Update 156 Cost 1090.392333984375
+
+Train Data: 0.0136578 0.99718847543
+valid Data: 0.118215 0.758060644362
+Test  Data: 0.164531 0.559389260217 
+
+Epoch 26
+     Update 157 Cost 1024.33056640625
+     Update 158 Cost 2813.79345703125
+     Update 159 Cost 1903.96533203125
+     Update 160 Cost 2529.21728515625
+     Update 161 Cost 1692.5731201171875
+     Update 162 Cost 952.01806640625
+
+Train Data: 0.011589 0.997995018877
+valid Data: 0.124686 0.739831872664
+Test  Data: 0.162701 0.567330393694 
+
+Epoch 27
+     Update 163 Cost 704.7265625
+     Update 164 Cost 3718.08837890625
+     Update 165 Cost 1290.849609375
+     Update 166 Cost 2914.86962890625
+     Update 167 Cost 1414.802490234375
+     Update 168 Cost 1225.089111328125
+
+Train Data: 0.0159278 0.996210294031
+valid Data: 0.116583 0.76446312125
+Test  Data: 0.165658 0.557386113956 
+
+Epoch 28
+     Update 169 Cost 1345.1619873046875
+     Update 170 Cost 2559.4609375
+     Update 171 Cost 1934.968994140625
+     Update 172 Cost 2623.382568359375
+     Update 173 Cost 1681.0595703125
+     Update 174 Cost 911.9921875
+
+Train Data: 0.0109322 0.998224688596
+valid Data: 0.124349 0.74171304641
+Test  Data: 0.162916 0.56733843833 
+
+Epoch 29
+     Update 175 Cost 630.883056640625
+     Update 176 Cost 3000.14453125
+     Update 177 Cost 1618.704833984375
+     Update 178 Cost 2489.411865234375
+     Update 179 Cost 1612.993896484375
+     Update 180 Cost 1060.1259765625
+
+Train Data: 0.0136452 0.997197841873
+valid Data: 0.117489 0.759933625389
+Test  Data: 0.164757 0.557614481921 
+
+Early Stop!
+
+The Best test rmse: 0.161076813936
+The Best test ccc: 0.57413184767
+Test with best Param
+Load model, the model loaded must have the same network struct with this
+Train Data: 0.0633811 0.924203106886
+valid Data: 0.12641 0.678244834713
+Test  Data: 0.161077 0.517665867737 
+
+
+The src run for 30 epochs, with 335.394269 sec/epochs
+Training took 10062s
+Stage 2:  ((0.063381068, 0.92420310688605456), (0.12641039, 0.67824483471281094), (0.16107681, 0.51766586773745815))
+
+Process finished with exit code 0
+

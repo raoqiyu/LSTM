@@ -1,0 +1,72 @@
+[-0.022925   -0.022925   -0.022925   ..., -0.1477697  -0.1461031
+ -0.14276969]
+
+---------------------------------------------- Before train--------------------------------------------------------
+whole_data 
+y
+max = {float32} 0.408742
+min = {float32} -0.599202
+
+pred
+preds_flatten = {ndarray} [-0.00355912 -0.00063635 -0.00284108 ...,  0.00490456  0.00332302\n -0.00021871]
+ max = {float32} 0.0446244
+ min = {float32} -0.0424937
+
+cov = {float32} -4.91165e-05
+mean_y = {float32} -0.0489742
+mean_preds = {float32} -0.00118368
+var_preds = {float32} 8.75758e-05
+var_y = {float32} 0.0374517
+
+-0.00246672744634
+
+trainData
+ccc = {float64} 0.00625307082242
+cov = {float32} 0.000105408
+mean_preds = {float32} -0.000883837
+mean_y = {float32} 0.027494
+var_preds = {float32} 9.29636e-05
+var_y = {float32} 0.0328158
+
+---------------------------------------------- Update 1--------------------------------------------------------
+whole data
+ccc = {float64} 0.00333375672161
+cov = {float32} 6.85047e-05
+mean_y = {float32} -0.0489742
+mean_preds = {float32} 0.0103308
+rmse = {float32} 0.202387
+var_preds = {float32} 0.000128863
+var_y = {float32} 0.0374517
+
+
+trainData
+
+ccc = {float64} 0.0378779957705
+cov = {float32} 0.00062982
+mean_y = {float32} 0.027494
+mean_preds = {float32} 0.0106551
+var_y = {float32} 0.0328158
+var_preds = {float32} 0.000155825
+rmse = {float32} 0.178873
+
+
+---------------------------------------------- Update 2-----------------------------------------------------
+whole data
+ccc = {float64} 0.00762451367578
+cov = {float32} 0.000160004
+mean_preds = {float32} 0.0163168
+mean_y = {float32} -0.0489742
+rmse = {float32} 0.204086
+var_preds = {float32} 0.000256408
+var_y = {float32} 0.0374517
+
+trainData
+ccc = {float64} 0.0738081622929
+cov = {float32} 0.00122766
+mean_y = {float32} 0.027494
+mean_preds = {float32} 0.0170623
+var_y = {float32} 0.0328158
+var_preds = {float32} 0.000341736
+rmse = {float32} 0.175531
+
+
