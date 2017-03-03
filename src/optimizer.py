@@ -37,7 +37,7 @@ class ADADELTA(object):
         self.name = 'Adadelta'
 
     # noinspection PyUnresolvedReferences
-    def compile(self, params, x, y, cost):
+    def compile(self, params, x1, x2, y, cost):
         gradients = [T.grad(cost, param) for param in params]
 
         zipped_grads = [theano.shared(p.get_value() * numpy_floatX(0.),
@@ -54,7 +54,7 @@ class ADADELTA(object):
         rg2up = [(rg2, 0.95 * rg2 + 0.05 * (g ** 2))
                  for rg2, g in zip(running_grads2, gradients)]
 
-        train = theano.function([x, y], cost, updates=zgup + rg2up,
+        train = theano.function([x1, x2, y], cost, updates=zgup + rg2up,
                                 name='adadelta_train')
 
         updir = [-T.sqrt(ru2 + 1e-6) / T.sqrt(rg2 + 1e-6) * zg

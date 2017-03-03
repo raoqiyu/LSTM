@@ -142,14 +142,26 @@ def evaluate(f_pred, prepare_data, data):
     n_samples = len(data)
     n_steps = len(data[0][0])
     # kf = get_minibatches_idx(len(data), 5)
-    x = prepare_data([data[t][0] for t in range(n_samples)])
-    y = prepare_data([data[t][1] for t in range(n_samples)])
-    y_preds = numpy.zeros(y.shape, dtype=y.dtype)
-    kf = get_minibatches_idx(n_samples, 50)
-    for _, valid_index in kf:
-        x_preds = x[:, valid_index, :]
-        preds = f_pred(x_preds)
-        y_preds[:, valid_index, :] = preds
+    if len(data[0]) == 2:
+        x = prepare_data([data[t][0] for t in range(n_samples)])
+        y = prepare_data([data[t][1] for t in range(n_samples)])
+        y_preds = numpy.zeros(y.shape, dtype=y.dtype)
+        kf = get_minibatches_idx(n_samples, 50)
+        for _, valid_index in kf:
+            x_preds = x[:, valid_index, :]
+            preds = f_pred(x_preds)
+            y_preds[:, valid_index, :] = preds
+    elif len(data[0]) == 3:
+        x1 = prepare_data([data[t][0] for t in range(n_samples)])
+        x2 = prepare_data([data[t][1] for t in range(n_samples)])
+        y = prepare_data([data[t][2] for t in range(n_samples)])
+        y_preds = numpy.zeros(y.shape, dtype=y.dtype)
+        kf = get_minibatches_idx(n_samples, 50)
+        for _, valid_index in kf:
+            x1_preds = x1[:, valid_index, :]
+            x2_preds = x2[:, valid_index, :]
+            preds = f_pred(x1_preds,x2_preds)
+            y_preds[:, valid_index, :] = preds
     # preds = f_pred(x)
     preds_flatten = y_preds.flatten('F')
     y_flatten = y.flatten('F')

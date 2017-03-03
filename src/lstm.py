@@ -137,6 +137,7 @@ class LSTM(object):
         # self.y = T.vector('y', dtype='int64')
 
         self._input = self.x
+        self._input2 = self.x2
         self._output = self.y
         self.params = []
 
@@ -255,7 +256,7 @@ class LSTM(object):
             self.n_layer += 1
             self.params += layer.params
             print("Add a imdb activation layer")
-        elif layer._name == "avec_activate":
+        elif layer._name == "linear_activate":
             assert (self.n_hiddens[-1] == layer.n_input)
             layer.perform(self._output, self.noise)
             self._output = layer.output
@@ -266,11 +267,10 @@ class LSTM(object):
             self.n_hiddens.append(layer.n_output)
             self.n_layer += 1
             self.params += layer.params
-            print("Add a avec activation layer")
+            print("Add a linear activation layer")
         elif layer._name == "linear_fusion":
-            assert (self.n_layers == 0)
-            self._input = [self.x, self.x2]
-            layer.perform(self._input)
+            assert (self.n_layer == 0)
+            layer.perform(self._input,self._input2)
 
             # Add this layer to the network
             self.n_input = layer.n_input
@@ -280,8 +280,20 @@ class LSTM(object):
             self.n_layer += 1
             self.params += layer.params
             self.n_output = layer.n_output
-            print("Add a avec activation layer. This layer must be the first layer in this code")
+            print("Add a linear fusion layer. This layer must be the first layer in this code")
+        elif layer._name == "attention_lstm_fusion":
+            assert (self.n_layer == 0)
+            layer.perform(self._input, self._input2)
 
+            # Add this layer to the network
+            self.n_input = layer.n_input
+            self.n_hiddens.append(layer.n_output)
+            self._output = layer.output
+            self.layers.append(layer)
+            self.n_layer += 1
+            self.params += layer.params
+            self.n_output = layer.n_output
+            print("Add a attention lstm fusion layer. This layer must be the first layer in this code")
     def setup(self, options):
         for k in options:
             assert (k in self.options)
@@ -294,7 +306,7 @@ class LSTM(object):
         #                                    name='y_pred_prob')
         # self.y_pred = theano.function([self._input, self.mask],
         #                               self._output.argmax(axis=1), name='y_pred')
-        self.predict = theano.function([self._input], self._output, name='predict')
+        self.predict = theano.function([self._input,self._input2], self._output, name='predict')
         off = 1e-4
         if self._output.dtype == 'float16':
             off = 1e-2
@@ -330,8 +342,14 @@ class LSTM(object):
             L2_reg *= self.options["L2_penalty"]
             train_cost += L2_reg
         assert (self.options["optimizer"] is not None)
-        self.train, self.update = self.options["optimizer"].compile(params=self.params,
-                                                                    x=self.x,
+        #self.train, self.update = self.options["optimizer"].compile(params=self.params,
+        #                                                            x=self.x,
+        #                                                            y=self.y,
+         #                                                           cost=train_cost,
+         #                                                           )
+        self.trainFusion, self.update = self.options["optimizer"].compile(params=self.params,
+                                                                    x1=self.x,
+                                                                    x2=self.x2,
                                                                     y=self.y,
                                                                     cost=train_cost,
                                                                     )
@@ -417,24 +435,43 @@ class LSTM(object):
                 n_iter += 1
 
                 # Select the random examples for this minibatch
-                x = [trainData[t][0] for t in train_index]
-                y = [trainData[t][1] for t in train_index]
+                if len(trainData[0]) == 2:
+                    x = [trainData[t][0] for t in train_index]
+                    y = [trainData[t][1] for t in train_index]
 
-                # Get the data in numpy.ndarray format
-                # Do parallel computing
-                # return training data of shape (n_steps, n_samples, n_feature_size)
-                x = parallelize_data(x)
-                y = parallelize_data(y)
-                n_samples += x.shape[1]
+                    # Get the data in numpy.ndarray format
+                    # Do parallel computing
+                    # return training data of shape (n_steps, n_samples, n_feature_size)
+                    x = parallelize_data(x)
+                    y = parallelize_data(y)
+                    n_samples += x.shape[1]
 
-                cost = self.train(x, y)
-                self.update()
-                # print(self.lstm.Wh.get_value())
+                    cost = self.train(x, y)
+                    self.update()
+                    # print(self.lstm.Wh.get_value())
+                elif len(trainData[0]) == 3:
+                    x1 = [trainData[t][0] for t in train_index]
+                    x2 = [trainData[t][1] for t in train_index]
+                    y = [trainData[t][2] for t in train_index]
 
+                    # Get the data in numpy.ndarray format
+                    # Do parallel computing
+                    # return training data of shape (n_steps, n_samples, n_feature_size)
+                    x1 = parallelize_data(x1)
+                    x2 = parallelize_data(x2)
+                    y = parallelize_data(y)
+                    n_samples += x1.shape[1]
+
+                    cost = self.trainFusion(x1,x2,y)
+                    self.update()
                 # Check whether there is error(NaN)
-                if np.isnan(cost) or np.isinf(cost):
+                if np.isnan(cost):
                     print('NaN detected.')
                     return 1., 1., 1.
+                if np.isinf(cost):
+                    print('inf detected.')
+                    return 1., 1., 1.
+
 
                 # Check whether display training progress or not
                 if np.mod(n_iter, self.options["dispFreq"]) == 0:

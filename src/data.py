@@ -30,6 +30,29 @@ def Load_Data(test_size=0):
     print('%d test  examples' % len(testData[0]))
     return trainData, validData, testData
 
+def load_fusion_data(path, label):
+    # -----------------------------Loading Data------------------------------
+    print('-' * 20, 'Loading fusion Data', '-' * 20)
+
+    filepath = '/'.join([path, 'recola_data/training/fusion', label])
+
+    f_train = open(filepath + '/' + 'train' + label.capitalize() + '.pkl', 'rb')
+    trainData = pickle.load(f_train)
+    f_train.close()
+
+    f_val = open(filepath + '/' + 'valid' + label.capitalize() + '.pkl', 'rb')
+    validData = pickle.load(f_val)
+    f_val.close()
+
+    f_test = open(filepath + '/' + 'test' + label.capitalize() + '.pkl', 'rb')
+    testData = pickle.load(f_test)
+    f_test.close()
+
+    print('%d train examples' % len(trainData),len(trainData[0]), len(trainData[0][0]),len(trainData[0][0][0]))
+    print('%d valid examples' % len(validData),len(validData[0]), len(validData[0][0]),len(validData[0][0][0]))
+    print('%d test  examples' % len(testData),len(testData[0]), len(testData[0][0]),len(testData[0][0][0]))
+    return trainData, validData, testData
+
 
 def load_recola_data(path, feature, label):
     # -----------------------------Loading Data------------------------------

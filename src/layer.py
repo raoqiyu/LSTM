@@ -82,12 +82,12 @@ class imdb_activate(object):
         self.output = T.nnet.softmax(T.dot(x, self.w) + self.b)
 
 
-class avec_activate(object):
+class linear_activate(object):
     """Output layer for AVEC dataset
     """
 
     def __init__(self, n_input, n_output):
-        self._name = "avec_activate"
+        self._name = "linear_activate"
         self.n_input = n_input
         self.n_output = n_output
         self.input = None
@@ -114,12 +114,12 @@ class avec_activate(object):
         self.output = o
 
 
-class bi_avec_activate(object):
+class bi_linear_activate(object):
     """Output layer for AVEC dataset
     """
 
     def __init__(self, n_input, n_output):
-        self._name = "avec_activate"
+        self._name = "linear_activate"
         self.n_input = n_input
         self.n_output = n_output
         self.input = None
@@ -254,8 +254,8 @@ class lstm_layer(object):
             return [h, c]
 
         # h0 and c0 are initialized randomly
-        h0 = T.alloc(numpy(0.), n_samples, self.n_output);
-        c0 = T.alloc(numpy(0.), n_samples, self.n_output)
+        h0 = T.alloc(numpy_floatX(0.), n_samples, self.n_output);
+        c0 = T.alloc(numpy_floatX(0.), n_samples, self.n_output)
         h0 = theano.tensor.unbroadcast(h0, 1);
         c0 = theano.tensor.unbroadcast(c0, 1)
         [h, c], _ = theano.scan(fn=_step, sequences=x,
@@ -610,7 +610,7 @@ class linear_fusion_layer(object):
     """
 
     def __init__(self, n_input, n_output):
-        self._name = "liner_fusion"
+        self._name = "linear_fusion"
         self.n_input = n_input
         self.n_output = n_output
         self.input = None
@@ -626,10 +626,10 @@ class linear_fusion_layer(object):
         self.b = theano.shared(value=b, name='b', borrow=True)
         self.params = [self.w1, self.w2, self.b]
 
-    def perform(self, x):
-        x1, x2 = x[0], x[1]
+    def perform(self, x1, x2):
         n_steps = x1.shape[0]
-        self.input = x
+
+        self.input = [x1,x2]
 
         def _step(x1_t, x2_t):
             o = T.dot(x1_t, self.w1) + T.dot(x2_t, self.w2) + self.b
@@ -659,7 +659,7 @@ class attention_fusion_lstm_layer(object):
         """
 
         # Parameter for LSTM
-        self._name = "attention_fusion"
+        self._name = "attention_lstm_fusion"
         self.n_input = n_input
         self.n_output = n_output
         # Wh = [ Wi, Wc, Wf, Wo]
@@ -682,34 +682,39 @@ class attention_fusion_lstm_layer(object):
         bh = np.zeros((n_output * 4,)).astype(theano.config.floatX)
         self.bh = theano.shared(value=bh, name='bh', borrow=True)
 
-        self.params = [self.Wh, self.Uh, self.bh]
+        #self.params = [self.Wh, self.Uh, self.bh]
 
         # Parameter for Attention singal
-        Wa = np.random.rand(n_input,n_input)
-        Ua = np.random.rand(n_output,n_input)
-        Va = np.random.rand(n_input,1)
+        Wa = 0.01*np.random.rand(n_input,n_input).astype(theano.config.floatX)
+        Ua = 0.01*np.random.rand(n_output,n_input).astype(theano.config.floatX)
+        #Va = 0.01*np.random.rand(n_input,1).astype(theano.config.floatX)
         self.Wa = theano.shared(value=Wa, name='Wa', borrow=True)
         self.Ua = theano.shared(value=Ua, name='Ua', borrow=True)
-        self.Va = theano.shared(value=Va, name='Va', borrow=True)
+        #self.Va = theano.shared(value=Va, name='Va', borrow=True)
 
-    def perform(self, x):
-        x1, x2 = x[0], x[1]
+
+        self.params = [self.Wh, self.Uh, self.bh, self.Wa, self.Ua]#, self.Va]
+
+
+    def perform(self, x1, x2):
         nsteps = x1.shape[0]
         # if x.ndim == 3:
         #     n_samples = x.shape[1]
         # else:
         #     n_samples = 1
         #
-        n_samples = x.shape[1]
+        n_samples = x1.shape[1]
 
         def compute_context_vector(x1_t, x2_t, h_tm1):
-            e1 = T.dot(T.tanh(T.dot(x1_t,self.Wa) + T.dot(h_tm1, self.Ua)),self.Va)
-            e2 = T.dot(T.tanh(T.dot(x2_t, self.Wa) + T.dot(h_tm1, self.Ua)), self.Va)
-
-            a1 = e1/(e1+e2)
-            a2 = e2/(e1 + e2)
-
-            context_vector = T.dot(x1_t,a2) + T.dot(x2_t,a2)
+            #e1 = T.dot(T.tanh(T.dot(x1_t,self.Wa,) + T.dot(h_tm1,self.Ua)),self.Va)
+            #e2 = T.dot(T.tanh(T.dot(x2_t,self.Wa,) + T.dot(h_tm1,self.Ua)), self.Va)
+            #e1 = T.dot(T.tanh(T.dot(x1_t,self.Wa) + T.dot(h_tm1,self.Ua)),self.Va)
+            #e2 = T.dot(T.tanh(x2_t * self.Wa + h_tm1 * self.Ua),self.Va)
+            #a1 = e1/(e1+e2)
+            #a2 = e2/(e1+e2)
+            a1 = T.tanh(T.dot(x1_t,self.Wa) + T.dot(h_tm1,self.Ua))
+            a2 = T.tanh(T.dot(x2_t,self.Wa) + T.dot(h_tm1, self.Ua))
+            context_vector = x1_t*a1 + x2_t*a2
             return context_vector
 
 
@@ -741,12 +746,12 @@ class attention_fusion_lstm_layer(object):
             return [h, c]
 
         # h0 and c0 are initialized randomly
-        h0 = T.alloc(numpy(0.), n_samples, self.n_output);
-        c0 = T.alloc(numpy(0.), n_samples, self.n_output)
+        h0 = T.alloc(numpy_floatX(0.), n_samples, self.n_output)
+        c0 = T.alloc(numpy_floatX(0.), n_samples, self.n_output)
         h0 = theano.tensor.unbroadcast(h0, 1);
         c0 = theano.tensor.unbroadcast(c0, 1)
-        [h, c], _ = theano.scan(fn=_step, sequences=x,
+        [h, c], _ = theano.scan(fn=_step, sequences=[x1,x2],
                                 outputs_info=[h0, c0],
                                 n_steps=nsteps)
-        self.input = x
+        self.input = [x1,x2]
         self.output = h
