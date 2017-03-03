@@ -131,6 +131,7 @@ class LSTM(object):
         # input:  x [nsteps, ni], row 0 corresponds to the time step t=0
         self.x = T.tensor3('x', dtype=theano.config.floatX)
         self.y = T.tensor3('y', dtype=theano.config.floatX)
+        self.x2 = T.tensor3('x2', dtype=theano.config.floatX)
         # self.x = T.matrix('x', dtype='int64')
         self.mask = T.matrix('mask', dtype=theano.config.floatX)
         # self.y = T.vector('y', dtype='int64')
@@ -266,6 +267,20 @@ class LSTM(object):
             self.n_layer += 1
             self.params += layer.params
             print("Add a avec activation layer")
+        elif layer._name == "linear_fusion":
+            assert (self.n_layers == 0)
+            self._input = [self.x, self.x2]
+            layer.perform(self._input)
+
+            # Add this layer to the network
+            self.n_input = layer.n_input
+            self.n_hiddens.append(layer.n_output)
+            self._output = layer.output
+            self.layers.append(layer)
+            self.n_layer += 1
+            self.params += layer.params
+            self.n_output = layer.n_output
+            print("Add a avec activation layer. This layer must be the first layer in this code")
 
     def setup(self, options):
         for k in options:

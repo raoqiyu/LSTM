@@ -603,3 +603,40 @@ class temporal_pooling_layer(object):
         # h, _ = theano.scan(mean_pooling, sequences=[dict)])
 
         self.output = h
+
+
+class linear_fusion_layer(object):
+    """Output layer for AVEC dataset
+    """
+
+    def __init__(self, n_input, n_output):
+        self._name = "liner_fusion"
+        self.n_input = n_input
+        self.n_output = n_output
+        self.input = None
+        self.output = None
+
+        # w : model's output weights
+        w1 = 0.01 * np.random.randn(n_input, n_output).astype(theano.config.floatX)
+        self.w1 = theano.shared(value=w1, name='w1', borrow=True)
+        w2 = 0.01 * np.random.randn(n_input, n_output).astype(theano.config.floatX)
+        self.w2 = theano.shared(value=w2, name='w2', borrow=True)
+        # b : model's output weights
+        b = np.zeros((n_output,)).astype(theano.config.floatX)
+        self.b = theano.shared(value=b, name='b', borrow=True)
+        self.params = [self.w1, self.w2, self.b]
+
+    def perform(self, x):
+        x1, x2 = x[0], x[1]
+        n_steps = x1.shape[0]
+        self.input = x
+
+        def _step(x1_t, x2_t):
+            o = T.dot(x1_t, self.w1) + T.dot(x2_t, self.w2) + self.b
+            return o
+
+        # h0 and c0 are initialized randomly
+        o, _ = theano.scan(_step, sequences=[x1, x2],
+                           outputs_info=None,
+                           name='avec_output', n_steps=n_steps)
+        self.output = o
