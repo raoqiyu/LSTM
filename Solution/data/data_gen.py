@@ -9,30 +9,32 @@ sys.path.append("../../src")
 
 import pickle
 
-from data import load_avec2015_data,load_avec2015_data2,Normalizs,Z_ScoreNorm
+from data import load_avec2015_data,load_avec2015_data2,Normalizs,Z_ScoreNorm,load_avec2015_data_norm,load_recola_data
 from utils import generateData
 
-trainData, validData, testData = load_avec2015_data2('./',
-                                                     'features_video_appearance', 'arousal')
+trainData, validData, testData = load_recola_data('./',
+                                                     'features_video', 'valence')
 
 
-# Z_ScoreNorm(trainData, "training/features_video_geometric/arousal/trainArousal_norm.pkl")
-# Z_ScoreNorm(validData+testData, "training/features_video_geometric/arousal/devArousal_norm.pkl")
+#Z_ScoreNorm(trainData, "training/features_audio/arousal/trainArousal_norm.pkl")
+#Z_ScoreNorm(validData+testData, "training/features_audio/arousal/devArousal_norm.pkl")
 # print("Done!")
-# GaussianNorm(trainData, "trainArousal_normed.pkl")
-# GaussianNorm(validData+testData, "devArousal_normed.pkl")
+#Normalizs(trainData, "trainArousal_normed.pkl")
+#Normalizs(validData+testData, "devArousal_normed.pkl")
 
 #--------------------------------------------------------
-durations = [0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95]
-n_skips = [100,125,150]
 
+#durations = [0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95]
+#n_skips = [100,125,150]
+durations=[0.6]
+n_skips=[150]
 for duration in durations:
    for n_skip in n_skips:
        print(duration, n_skip)
        shuffled_trainData = generateData(trainData, duration, n_skip)
        n_sample = len(shuffled_trainData)
 
-       filename =  "training/features_video_appearance/arousal/generated_train_Stage2_" + str(duration) + "_" + str(n_skip) + "_" + str(n_sample) + ".pkl"
+       filename =  "recola_data/training/features_video/valence/generated_train_" + str(duration) + "_" + str(n_skip) + "_" + str(n_sample) + ".pkl"
        if os.path.exists(filename):
             print("File exits. continue...")
             continue

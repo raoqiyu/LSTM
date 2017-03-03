@@ -97,6 +97,8 @@ def make_data(folder, feature_type):
     for t in feature_type:
         if t == 'features_video_geometric':
             skip_lines = 324
+        if t == 'features_audio':
+            skip_lines = 110
         else:
             skip_lines = 92
         make_feature(folder, t, skip_lines)
@@ -210,8 +212,8 @@ def load_data(path, feature, label):
 
 if __name__ == '__main__':
     AVEC = './Raw'
-    feature_type = ['features_video_geometric']
-   # make_path(feature_type)
-    #make_data(AVEC, feature_type)
+    feature_type = ['features_audio']
+    make_path(feature_type)
+    make_data(AVEC, feature_type)
     make_label_text(AVEC)
-    #merge_data('features_video_geometric')
+    merge_data('features_audio')

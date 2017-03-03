@@ -23,7 +23,7 @@ def stage1(options, trainData, validData, testData, n_layer, n_hidden):
     model = LSTM()
 
     # Build Neural Network
-    n_input =  84
+    n_input =  102
     n_hidden = n_hidden
     n_output = 1
 
@@ -95,8 +95,8 @@ def run():
     # trainData, validData, testData = load_avec2015_data_generated2('data/AVEC2015','features_video_appearance',
     # 'arousal', '_0.7_150_135.pkl')
 
-    n_fea, n_dim  = 0, 0
-    features = ['features_video_appearance','features_video_geometric']
+    n_fea, n_dim  = 2, 0
+    features = ['features_video_appearance','features_video_geometric','features_audio']
     dimensions = ['arousal','valence']
     print("Data : ",features[n_fea], dimensions[n_dim])
 
@@ -130,16 +130,16 @@ def run():
         "dispFreq":1,
     }
     
-    """
+
     # Stage 1
-    filename = '_0.95_100_36.pkl'
+    filename = '_norm_0.75_150_117.pkl'
     print("Data : ",filename)
     print("Data : ", 'load_avec2015_data_generated')
     
     trainData, validData, testData = load_avec2015_data_generated('data', features[n_fea], dimensions[n_dim], filename)
     
     np.random.seed(123)
-    n_layer = 3
+    n_layer = 2
     n_hidden = 64
     
     # /home/admin1_417/Raoqiyu/Exp/LSTM/Solution/Stage1/Range/App/arousal/0.6
@@ -148,26 +148,27 @@ def run():
     
     metric = stage1(options, trainData, validData, testData, n_layer, n_hidden)
     print("Stage 1: ", metric)
-    """
+
     # Stage 2
+    """
     filename = '_0.95_100_36.pkl'
     print("Data : ",filename)
     print("Data : ", 'load_avec2015_data_generated2')
-    """
+
     #trainData, validData, testData = load_avec2015_data2('data', features[n_fea], dimensions[n_dim])
     trainData, data1 , data2 = load_avec2015_data2('data', features[n_fea], dimensions[n_dim])
     validData = data1 + data2
     testData = validData
-    """
+
     trainData, validData, testData = load_avec2015_data_generated2('data', features[n_fea], dimensions[n_dim], filename)
     np.random.seed(123)
     #options["saveto"] = 'Stage2/Basic/Supervised/valence/model/'
     options["saveto"] = 'Stage2/Range/App/arousal/0.95/100/model/'
     n_layer = 1
-    
+
     metric = stage2(options, trainData, validData, testData, n_layer)
     print("Stage 2: ", metric)
-
+    """
 
 if __name__ == "__main__":
     run()

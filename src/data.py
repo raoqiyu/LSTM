@@ -31,6 +31,54 @@ def Load_Data(test_size=0):
     return trainData, validData, testData
 
 
+def load_recola_data(path, feature, label):
+    # -----------------------------Loading Data------------------------------
+    print('-' * 20, 'Loading recola Data', '-' * 20)
+
+    filepath = '/'.join([path, 'recola_data/training', feature, label])
+
+    f_train = open(filepath + '/' + 'train' + label.capitalize() + '.pkl', 'rb')
+    trainData = pickle.load(f_train)
+    f_train.close()
+
+    f_val = open(filepath + '/' + 'valid' + label.capitalize() + '.pkl', 'rb')
+    validData = pickle.load(f_val)
+    f_val.close()
+
+    f_test = open(filepath + '/' + 'test' + label.capitalize() + '.pkl', 'rb')
+    testData = pickle.load(f_test)
+    f_test.close()
+
+    print('%d train examples' % len(trainData))
+    print('%d valid examples' % len(validData))
+    print('%d test  examples' % len(testData))
+    return trainData, validData, testData
+
+def load_recola_data_generated(path, feature, label, s_type):
+    # -----------------------------Loading Data------------------------------
+    print('-' * 20, 'Loading recola Data', '-' * 20)
+    print('generated_train' + s_type)
+
+    filepath = '/'.join([path, 'recola_data/training', feature, label])
+
+    f_val = open(filepath + '/' + 'valid' + label.capitalize() + '.pkl', 'rb')
+    validData = pickle.load(f_val)
+    f_val.close()
+
+    f_test = open(filepath + '/' + 'test' + label.capitalize() + '.pkl', 'rb')
+    testData = pickle.load(f_test)
+    f_test.close()
+
+    f_generated = open(filepath + '/' + 'generated_train' + s_type, 'rb')
+    generatedData = pickle.load(f_generated)
+    f_generated.close()
+
+    print('%d generated train examples' % len(generatedData), ":", len(generatedData), len(generatedData[0][0]))
+    print('%d original train examples' % len(validData), ":", len(validData), len(validData[0][0]))
+    print('%d valid  examples' % len(testData), ":", len(testData), len(testData[0][0]))
+    return generatedData, validData, testData
+
+
 def load_avec2015_data(path, feature, label, valid_size=3):
     # -----------------------------Loading Data------------------------------
     print('-' * 20, 'Loading Data', '-' * 20)
@@ -75,13 +123,13 @@ def load_avec2015_data_norm(path, feature, label, valid_size=3):
     print('-' * 20, 'Loading Data', '-' * 20)
 
     filepath = '/'.join([path, 'training', feature, label])
-    print("trainData: _pooling.pkl")
-    f_train = open(filepath + '/' + 'train' + label.capitalize() + '_norm.pkl', 'rb')
+    print("trainData: _norm.pkl")
+    f_train = open(filepath + '/' + 'train' + label.capitalize() + '_normed.pkl', 'rb')
     trainData = pickle.load(f_train)
     f_train.close()
 
-    print("devData: .pkl")
-    f_dev = open(filepath + '/' + 'dev' + label.capitalize() + '_norm.pkl', 'rb')
+    print("devData: _norm.pkl")
+    f_dev = open(filepath + '/' + 'dev' + label.capitalize() + '_normed.pkl', 'rb')
     validData = pickle.load(f_dev)
     f_dev.close()
     testData, validData = validData[valid_size:], validData[:valid_size]
