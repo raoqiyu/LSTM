@@ -54,6 +54,53 @@ def load_recola_data(path, feature, label):
     print('%d test  examples' % len(testData))
     return trainData, validData, testData
 
+def load_recola_data2(path, feature, label):
+    # -----------------------------Loading Data------------------------------
+    print('-' * 20, 'Loading recola Data', '-' * 20)
+
+    filepath = '/'.join([path, 'recola_data/training', feature, label])
+
+    f_train = open(filepath + '/' + 'train' + label.capitalize() + 'Second.pkl', 'rb')
+    trainData = pickle.load(f_train)
+    f_train.close()
+
+    f_val = open(filepath + '/' + 'valid' + label.capitalize() + 'Second.pkl', 'rb')
+    validData = pickle.load(f_val)
+    f_val.close()
+
+    f_test = open(filepath + '/' + 'test' + label.capitalize() + 'Second.pkl', 'rb')
+    testData = pickle.load(f_test)
+    f_test.close()
+
+    print('%d train examples' % len(trainData))
+    print('%d valid examples' % len(validData))
+    print('%d test  examples' % len(testData))
+    return trainData, validData, testData
+
+def load_recola_data_generated2(path, feature, label, s_type):
+    # -----------------------------Loading Data------------------------------
+    print('-' * 20, 'Loading recola Data', '-' * 20)
+    print('generated_Stage2' + s_type)
+
+    filepath = '/'.join([path, 'recola_data/training', feature, label])
+
+    f_val = open(filepath + '/' + 'valid' + label.capitalize() + 'Second.pkl', 'rb')
+    validData = pickle.load(f_val)
+    f_val.close()
+
+    f_test = open(filepath + '/' + 'test' + label.capitalize() + 'Second.pkl', 'rb')
+    testData = pickle.load(f_test)
+    f_test.close()
+
+    f_generated = open(filepath + '/' + 'generated_train_Stage2' + s_type, 'rb')
+    generatedData = pickle.load(f_generated)
+    f_generated.close()
+
+    print('%d generated train examples' % len(generatedData), ":", len(generatedData), len(generatedData[0][0]))
+    print('%d original valid examples' % len(validData), ":", len(validData), len(validData[0][0]))
+    print('%d test  examples' % len(testData), ":", len(testData), len(testData[0][0]))
+    return generatedData, validData, testData
+
 def load_recola_data_generated(path, feature, label, s_type):
     # -----------------------------Loading Data------------------------------
     print('-' * 20, 'Loading recola Data', '-' * 20)
