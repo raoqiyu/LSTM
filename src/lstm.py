@@ -421,8 +421,8 @@ class LSTM(object):
         n_iter = 0  # iteration number.
         early_stop = False  # if early stop or not
         start_time = time.clock()
-        best_test_rmse = np.inf
-        best_test_ccc = 0
+        best_valid_rmse = np.inf
+        best_valid_CCC = 0
         for e in range(self.options["epochs"]):
             n_samples = 0
             print('Epoch', e)
@@ -494,22 +494,22 @@ class LSTM(object):
                     history_rmse.append([n_iter, train_rmse, valid_rmse, test_rmse])
                     history_ccc.append([n_iter, train_ccc, valid_ccc, test_ccc])
                     # Check if this param is the best param
-                    if test_rmse <= best_test_rmse:
+                    if valid_rmse <= best_valid_rmse:
                         self.save(self.options["saveto"] + "_rmse.pkl")
                         print('Saving rmse model')
-                        best_test_rmse = test_rmse
+                        best_valid_rmse = valid_rmse
                         # bad_count = 0
 
-                    if test_ccc >= best_test_ccc:
+                    if valid_ccc >= best_valid_CCC:
                         self.save(self.options["saveto"] + "_ccc.pkl")
                         print('Saving ccc model')
-                        best_test_ccc = test_ccc
+                        best_valid_CCC = test_ccc
                         bad_count = 0
 
                     # Early Stop
                     if (len(history_rmse) > self.options["patience"] and
                                 test_rmse >= np.array(history_rmse)[:-self.options["patience"],
-                                             -1].min()):
+                                             2].min()):
                         bad_count += 1
                         if bad_count > self.options["patience"]:
                             print('Early Stop!')
@@ -527,13 +527,13 @@ class LSTM(object):
         with open(self.options["saveto"] + "_err_ccc.pkl", 'wb') as f:
             pickle.dump(history_ccc, f)
         # visualize(history_errors, ["train error", "valid error", "test error"], self.options["saveto"]+"_errors.eps")
-        test_rmse = np.array(history_rmse)[:, -1].min()
-        test_ccc = np.array(history_ccc)[:, -1].max()
+        test_rmse = np.array(history_rmse)[:, 2].min()
+        test_ccc = np.array(history_ccc)[:, 2].max()
         print("\nThe Best test rmse:", test_rmse)
         print("The Best test ccc:", test_ccc)
 
         print('Test with best Param')
-        self.load(self.options["saveto"] + "_rmse.pkl")
+        self.load(self.options["saveto"] + "_ccc.pkl")
         train_rmse, train_ccc = evaluate(self.predict, parallelize_data,
                                          trainData)
         valid_rmse, valid_ccc = evaluate(self.predict, parallelize_data,
@@ -550,108 +550,3 @@ class LSTM(object):
 
         return [(train_rmse, train_ccc), (valid_rmse, valid_ccc), (test_rmse, test_ccc)]
 
-    def pretrainning(self, trainData):
-        print('\n', '-' * 20, 'Pretrainig', '-' * 20)
-        history_rmse = []
-        history_ccc = []
-        bad_count = 0
-        n_samples = len(trainData)
-        pratrainingData = []
-        for i in range(n_samples):
-            pratrainingData.append((trainData[i][1], trainData[i][1]))
-
-        if self.options["validFreq"] == -1:
-            self.options["validFreq"] = ceil(len(trainData) / self.options["batch_size"])
-
-        early_stop = False  # if early stop or not
-        start_time = time.clock()
-        best_train_rmse = np.inf
-        best_train_ccc = 0
-        for e in range(self.options["epochs"]):
-            n_samples = 0
-            print('Epoch', e)
-
-            kf = get_minibatches_idx(len(trainData), self.options["batch_size"],
-                                     shuffle=self.options["shuffle"])
-
-            for _, train_index in kf:
-                self.noise.set_value(1.)
-
-                # Select the random examples for this minibatch
-                x = [pratrainingData[t][0] for t in train_index]
-
-                # Get the data in numpy.ndarray format
-                # Do parallel computing
-                # return training data of shape (n_steps, n_samples, n_feature_size)
-                x = parallelize_data(x)
-                n_samples += x.shape[1]
-
-                cost = self.train(x, x)
-                self.update()
-                # print(self.lstm.Wh.get_value())
-
-                # Check whether there is error(NaN)
-                if np.isnan(cost) or np.isinf(cost):
-                    print('NaN detected.')
-                    return 1., 1., 1.
-
-                    # Check whether save to path or not (not impletemented yet)
-
-            # Check wether needed to do validation
-            self.noise.set_value(0.)
-            train_rmse, train_ccc = evaluate(self.predict, parallelize_data,
-                                             pratrainingData)
-
-            print("\nTrain Data:", train_rmse, train_ccc)
-
-            history_rmse.append(train_rmse)
-            history_ccc.append(train_ccc)
-            # Check if this param is the best param
-            if train_rmse <= best_train_rmse:
-                self.save(self.options["saveto"] + "pretraining__rmse.pkl")
-                print('Saving rmse model')
-                best_train_rmse = train_rmse
-                bad_count = 0
-
-            if train_ccc >= best_train_ccc:
-                self.save(self.options["saveto"] + "pretraining__ccc.pkl")
-                print('Saving ccc model')
-                best_train_ccc = train_ccc
-                # bad_count = 0
-
-            # Early Stop
-            if (len(history_rmse) > self.options["patience"] and
-                        train_rmse >= np.array(history_rmse)[:-self.options["patience"]].min()):
-                bad_count += 1
-                if bad_count > self.options["patience"]:
-                    print('Early Stop!')
-                    early_stop = True
-                    break
-
-            if early_stop:
-                break
-
-        end_time = time.clock()
-        self.noise.set_value(0.)
-
-        with open(self.options["saveto"] + "pretraining__err_rmse.pkl", 'wb') as f:
-            pickle.dump(history_rmse, f)
-        with open(self.options["saveto"] + "pretraining__err_ccc.pkl", 'wb') as f:
-            pickle.dump(history_ccc, f)
-        # visualize(history_errors, ["train error", "valid error", "test error"], self.options["saveto"]+"_errors.eps")
-        test_rmse = np.array(history_rmse).min()
-        test_ccc = np.array(history_ccc).max()
-        print("\nThe Best test rmse:", test_rmse)
-        print("The Best test ccc:", test_ccc)
-
-        print('Test with best Param')
-        self.load(self.options["saveto"] + "pretraining__rmse.pkl")
-        train_rmse, train_ccc = evaluate(self.predict, parallelize_data,
-                                         pratrainingData)
-        print("Train Data:", train_rmse, train_ccc)
-
-        print('The src run for %d epochs, with %f sec/epochs' %
-              (e + 1, (end_time - start_time) / (1. * (e + 1))))
-        print('Training took %0.fs' % (end_time - start_time))
-
-        return (train_rmse, train_ccc)

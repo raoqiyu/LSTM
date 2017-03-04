@@ -12,9 +12,10 @@ import pickle
 from data import load_avec2015_data,load_avec2015_data2,Normalizs,Z_ScoreNorm,load_avec2015_data_norm,load_recola_data
 from utils import generateData
 
-trainData, validData, testData = load_recola_data('./',
-                                                     'features_video', 'valence')
-
+#trainData, validData, testData = load_recola_data('./',
+#                                                     'features_video', 'valence')
+trainData, validData, testData = load_avec2015_data('./',
+                                                     'features_audio', 'valence')
 
 #Z_ScoreNorm(trainData, "training/features_audio/arousal/trainArousal_norm.pkl")
 #Z_ScoreNorm(validData+testData, "training/features_audio/arousal/devArousal_norm.pkl")
@@ -34,7 +35,7 @@ for duration in durations:
        shuffled_trainData = generateData(trainData, duration, n_skip)
        n_sample = len(shuffled_trainData)
 
-       filename =  "recola_data/training/features_video/valence/generated_train_" + str(duration) + "_" + str(n_skip) + "_" + str(n_sample) + ".pkl"
+       filename =  "training/features_audio/valence/generated_train_" + str(duration) + "_" + str(n_skip) + "_" + str(n_sample) + ".pkl"
        if os.path.exists(filename):
             print("File exits. continue...")
             continue

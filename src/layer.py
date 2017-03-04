@@ -687,13 +687,13 @@ class attention_fusion_lstm_layer(object):
         # Parameter for Attention singal
         Wa = 0.01*np.random.rand(n_input,n_input).astype(theano.config.floatX)
         Ua = 0.01*np.random.rand(n_output,n_input).astype(theano.config.floatX)
-        #Va = 0.01*np.random.rand(n_input,1).astype(theano.config.floatX)
+        Va = 0.01*np.random.rand(n_input,1).astype(theano.config.floatX)
         self.Wa = theano.shared(value=Wa, name='Wa', borrow=True)
         self.Ua = theano.shared(value=Ua, name='Ua', borrow=True)
-        #self.Va = theano.shared(value=Va, name='Va', borrow=True)
+        self.Va = theano.shared(value=Va, name='Va', borrow=True)
 
 
-        self.params = [self.Wh, self.Uh, self.bh, self.Wa, self.Ua]#, self.Va]
+        self.params = [self.Wh, self.Uh, self.bh, self.Wa, self.Ua, self.Va]
 
 
     def perform(self, x1, x2):
@@ -712,8 +712,10 @@ class attention_fusion_lstm_layer(object):
             #e2 = T.dot(T.tanh(x2_t * self.Wa + h_tm1 * self.Ua),self.Va)
             #a1 = e1/(e1+e2)
             #a2 = e2/(e1+e2)
-            a1 = T.tanh(T.dot(x1_t,self.Wa) + T.dot(h_tm1,self.Ua))
-            a2 = T.tanh(T.dot(x2_t,self.Wa) + T.dot(h_tm1, self.Ua))
+            a1 = self.Va*T.tanh(T.dot(x1_t,self.Wa) + T.dot(h_tm1,self.Ua))
+            a2 = self.Va*T.tanh(T.dot(x2_t,self.Wa) + T.dot(h_tm1,self.Ua))
+            #a = a1 + a2
+            #a1, a2 = a1/a, a2/a
             context_vector = x1_t*a1 + x2_t*a2
             return context_vector
 
@@ -751,6 +753,123 @@ class attention_fusion_lstm_layer(object):
         h0 = theano.tensor.unbroadcast(h0, 1);
         c0 = theano.tensor.unbroadcast(c0, 1)
         [h, c], _ = theano.scan(fn=_step, sequences=[x1,x2],
+                                outputs_info=[h0, c0],
+                                n_steps=nsteps)
+        self.input = [x1,x2]
+        self.output = h
+
+
+class attention_fusion_lstm_layer2(object):
+    """A Long-Short Term Memory layer"""
+
+    def __init__(self, n_input, n_output):
+        """
+
+        :type  nc: int
+        :param nc: dimension of input vector
+
+        :type  nh: int
+        :param nh: number of hidden units in this layer
+
+        :type  no: int
+        :param no: dimension of output vector
+        """
+
+        # Parameter for LSTM
+        self._name = "attention_lstm_fusion"
+        self.n_input = n_input
+        self.n_output = n_output
+        # Wh = [ Wi, Wc, Wf, Wo]
+        Wh = np.concatenate([np.random.randn(n_input, n_output).astype(theano.config.floatX),
+                             np.random.randn(n_input, n_output).astype(theano.config.floatX),
+                             np.random.randn(n_input, n_output).astype(theano.config.floatX),
+                             np.random.randn(n_input, n_output).astype(theano.config.floatX)]
+                            , axis=1)
+        # Wh = np.concatenate([ortho_weight(n_input, n_output), ortho_weight(n_input, n_output),
+        #                      ortho_weight(n_input, n_output), ortho_weight(n_input, n_output)]
+        #                     , axis=1)
+        self.Wh = theano.shared(value=Wh, name='Wh', borrow=True)
+        # U = [Ui, Uc, Uf, Uo]
+        Uh = np.concatenate([ortho_weight(n_output, n_output), ortho_weight(n_output, n_output),
+                             ortho_weight(n_output, n_output), ortho_weight(n_output, n_output)]
+                            , axis=1)
+        self.Uh = theano.shared(value=Uh, name='Uh', borrow=True)
+
+        # bh = [bi, bc, bf, bo]
+        bh = np.zeros((n_output * 4,)).astype(theano.config.floatX)
+        self.bh = theano.shared(value=bh, name='bh', borrow=True)
+
+        #self.params = [self.Wh, self.Uh, self.bh]
+
+        # Parameter for Attention singal
+        Wa = 0.01*np.random.rand(n_input,n_input).astype(theano.config.floatX)
+        Ua = 0.01*np.random.rand(n_output,n_input).astype(theano.config.floatX)
+        #Va = 0.01*np.random.rand(n_input,1).astype(theano.config.floatX)
+        self.Wa = theano.shared(value=Wa, name='Wa', borrow=True)
+        self.Ua = theano.shared(value=Ua, name='Ua', borrow=True)
+        #self.Va = theano.shared(value=Va, name='Va', borrow=True)
+
+
+        self.params = [self.Wh, self.Uh, self.bh, self.Wa, self.Ua]#, self.Va]
+
+
+    def perform(self, x):
+        nsteps = x.shape[0]
+        # if x.ndim == 3:
+        #     n_samples = x.shape[1]
+        # else:
+        #     n_samples = 1
+        #
+        n_samples = x.shape[1]
+
+        def compute_context_vector(x_t,h_tm1):
+            #e1 = T.dot(T.tanh(T.dot(x1_t,self.Wa,) + T.dot(h_tm1,self.Ua)),self.Va)
+            #e2 = T.dot(T.tanh(T.dot(x2_t,self.Wa,) + T.dot(h_tm1,self.Ua)), self.Va)
+            #e1 = T.dot(T.tanh(T.dot(x1_t,self.Wa) + T.dot(h_tm1,self.Ua)),self.Va)
+            #e2 = T.dot(T.tanh(x2_t * self.Wa + h_tm1 * self.Ua),self.Va)
+            #a1 = e1/(e1+e2)
+            #a2 = e2/(e1+e2)
+            #e1 = x_t*self.Wa +
+            #a1 = T.tanh(T.dot(x1_t,self.Wa) + T.dot(h_tm1,self.Ua))
+            #a2 = T.tanh(T.dot(x2_t,self.Wa) + T.dot(h_tm1, self.Ua))
+            #context_vector = x1_t*a1 + x2_t*a2
+            #return context_vector
+            return 1
+
+
+        def _slice(x_t, idx, ndim):
+            if x_t.ndim == 3:
+                return x_t[:, :, idx * ndim: (idx + 1) * ndim]
+            return x_t[:, idx * ndim:(idx + 1) * ndim]
+
+        def _step(x_t, h_tm1, c_tm1):
+
+            context_vector = compute_context_vector(x_t, h_tm1)
+
+            # z = sigmoid( W * x(t) + U * h(t-1) + b)
+            # zi =  W * x(t) + U * h(t-1) + b
+            zi = T.dot(context_vector, self.Wh) + T.dot(h_tm1, self.Uh) + self.bh
+            # zi = T.dot(h_tm1, self.Uh)
+            # zi += x_t
+            # W = [Wi, Wf, Wo, Wc], U = [Ui, Uf, Uo, Uc],  b = [bi, bf, bo, bc]
+            i = T.nnet.sigmoid(_slice(zi, 0, self.n_output))
+            f = T.nnet.sigmoid(_slice(zi, 1, self.n_output))
+            o = T.nnet.sigmoid(_slice(zi, 2, self.n_output))
+            c = T.tanh(_slice(zi, 3, self.n_output))
+
+            c = f * c_tm1 + i * c;
+
+            h = o * T.tanh(c)
+            # output at each time
+            # s = softmax(w * h_t + b)
+            return [h, c]
+
+        # h0 and c0 are initialized randomly
+        h0 = T.alloc(numpy_floatX(0.), n_samples, self.n_output)
+        c0 = T.alloc(numpy_floatX(0.), n_samples, self.n_output)
+        h0 = theano.tensor.unbroadcast(h0, 1);
+        c0 = theano.tensor.unbroadcast(c0, 1)
+        [h, c], _ = theano.scan(fn=_step, sequences=[x],
                                 outputs_info=[h0, c0],
                                 n_steps=nsteps)
         self.input = [x1,x2]

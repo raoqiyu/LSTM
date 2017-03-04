@@ -5,6 +5,8 @@
 Created on Thu Oct 15 21:37:00 2015
 """
 import sys
+from sklearn.svm import LinearSVR
+import pickle
 
 sys.path.append("../src")
 
@@ -40,6 +42,52 @@ def linear_fusion(options, trainData, validData, testData, n_layer, n_hidden):
     del model
     return train_err, valid_err, test_err
 
+def linear_SVR(dim):
+
+    set_path = 'data/recola_data/training/fusion2/' + dim +  '/'
+    trainfile = set_path + 'train' + dim.capitalize()+'linear.pkl'
+    validfile = set_path + 'valid' + dim.capitalize()+'linear.pkl'
+    testfile  = set_path + 'test' + dim.capitalize()+'linear.pkl'
+    fp = open(trainfile,'rb')
+    trainX, trainY = pickle.load(fp), pickle.load(fp)
+
+    fp.close()
+    fp = open(validfile, 'rb')
+    validX, validY = pickle.load(fp), pickle.load(fp)
+
+    fp.close()
+    fp = open(testfile, 'rb')
+    testX, testY = pickle.load(fp), pickle.load(fp)
+    fp.close()
+    best_c, best_CCC = -1, -1
+    for c in np.arange(0.01,10, 0.2):
+        clf = LinearSVR(C=c, max_iter=100)
+        clf.fit(trainX,trainY)
+        train_pred = clf.predict(trainX)
+        valid_pred = clf.predict(validX)
+        test_pred  = clf.predict(testX)
+        trainRMSE, trainCC, trainCCC = rater_statistics(train_pred, np.array(trainY))
+        validRMSE, validCC, validCCC = rater_statistics(valid_pred, np.array(validY))
+        testRMSE, testCC, testCCC = rater_statistics(test_pred, np.array(testY))
+        if validCCC > best_CCC:
+            best_c  = c
+        print("Train Data:",trainRMSE, trainCC, trainCCC)
+        print("Valid Data:",validRMSE, validCC, validCCC)
+        print("Test  Data:",testRMSE, testCC, testCCC)
+        print()
+    clf = LinearSVR(C=best_c,max_iter=100)
+    clf.fit(trainX, trainY)
+    train_pred = clf.predict(trainX)
+    valid_pred = clf.predict(validX)
+    test_pred = clf.predict(testX)
+    trainRMSE, trainCC, trainCCC = rater_statistics(train_pred, np.array(trainY))
+    validRMSE, validCC, validCCC = rater_statistics(valid_pred, np.array(validY))
+    testRMSE, testCC, testCCC = rater_statistics(test_pred, np.array(testY))
+
+    print('The best c is:', best_c)
+    print("Train Data:", trainRMSE, trainCC, trainCCC)
+    print("Valid Data:", validRMSE, validCC, validCCC)
+    print("Test  Data:", testRMSE, testCC, testCCC)
 
 
 def linear_lstm_fusion(options, trainData, validData, testData, n_layer, n_hidden):
@@ -79,7 +127,9 @@ def attention_lstm_fusion(options, trainData, validData, testData, n_layer, n_hi
 
     model.add(attention_fusion_lstm_layer(n_input,n_hidden))
     #model.add(blstm_layer(n_hidden,n_hidden))
-    model.add(bi_linear_activate(n_hidden,n_output))
+    #model.add(blstm_layer(n_hidden, n_hidden))
+    #model.add(blstm_layer(n_hidden, n_hidden))
+    model.add(linear_activate(n_hidden,n_output))
     # Choose optimizer
     adadelta = ADADELTA()
     options["optimizer"] = adadelta
@@ -96,7 +146,7 @@ def run():
     # trainData, validData, testData = load_avec2015_data_generated2('data/AVEC2015','features_video_appearance',
     # 'arousal', '_0.7_150_135.pkl')
 
-    n_dim = 1
+    n_dim = 0
     dimensions = ['arousal', 'valence']
     print("Fusion Data Emotional Dimension: ", dimensions[n_dim])
 
@@ -109,7 +159,7 @@ def run():
     ##-----------------------------------------------------------------------
     # Model Options
     options = {
-        "epochs": 2000,
+        "epochs": 100,
         "batch_size": 3,
         "valid_batch_size": 5,
         "learning_rate": 1e-5,
@@ -132,6 +182,7 @@ def run():
 
     options["saveto"] = 'Fusion/'+dimensions[n_dim]+'/'
 
+    linear_SVR(dimensions[n_dim])
     #metric = linear_fusion(options, trainData, validData, testData, n_layer, n_hidden)
     #print("linear_fusion: ", metric)
 
@@ -139,8 +190,8 @@ def run():
     #print("linear_lstm_fusion: ", metric)
 
 
-    metric = attention_lstm_fusion(options, trainData, validData, testData, n_layer, n_hidden)
-    print("linear_lstm_fusion: ", metric)
+    #metric = attention_lstm_fusion(options, trainData, validData, testData, n_layer, n_hidden)
+    #print("linear_lstm_fusion: ", metric)
 
 if __name__ == "__main__":
     run()
