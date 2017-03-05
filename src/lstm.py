@@ -507,8 +507,8 @@ class LSTM(object):
                         bad_count = 0
 
                     # Early Stop
-                    if (len(history_rmse) > self.options["patience"] and
-                                test_rmse >= np.array(history_rmse)[:-self.options["patience"],
+                    if (len(history_ccc) > self.options["patience"] and
+                                test_ccc >= np.array(history_ccc)[:-self.options["patience"],
                                              2].min()):
                         bad_count += 1
                         if bad_count > self.options["patience"]:
