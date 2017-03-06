@@ -5,13 +5,16 @@ make audio and video data into one data for modality-fusion training
 
 import  pickle
 em = ['arousal', 'valence']
-feature = ['features_audio', 'features_video']
-part = ['train', 'valid', 'test']
-
+#feature = ['features_audio', 'features_video']
+#part = ['train', 'valid', 'test']
+data_base = '.'
+feature = ['features_audio', 'features_video_appearance']
+parts = ['train', 'dev']
+#part = ['train', 'valid', 'test']
 for e in em:
-    for part in ["train", "valid", "test"]:
-        audio_file = '/'.join(['recola_data/training/', feature[0], e, part])+e.capitalize()+'AfterSecond.pkl'
-        video_file = '/'.join(['recola_data/training/', feature[1], e, part])+e.capitalize()+'AfterSecond.pkl'
+    for part in parts:
+        audio_file = '/'.join([data_base,'training', feature[0], e, part])+e.capitalize()+'AfterSecond.pkl'
+        video_file = '/'.join([data_base,'training',  feature[1], e, part])+e.capitalize()+'AfterSecond.pkl'
         print('\n',audio_file,'\n',video_file)
         audio_fp = open(audio_file,'rb')
         video_fp = open(video_file,'rb')
@@ -54,13 +57,13 @@ for e in em:
             fusion_data.append([fd,label])
 
         print(len(fusion_data), len(fusion_data[0]), len(fusion_data[0][0]),len(fusion_data[0][0][0]),len(fusion_data[0][1][0]))
-        file_name = 'recola_data/training/fusion2/'+e+'/'+part+e.capitalize()+'.pkl'
+        file_name = data_base+'/training/fusion2/'+e+'/'+part+e.capitalize()+'.pkl'
         print('Save as ', file_name)
         fp = open(file_name, 'wb')
         pickle.dump(fusion_data, fp)
         fp.close()
 
-        file_name = 'recola_data/training/fusion2/'+e+'/'+part+e.capitalize()+'linear.pkl'
+        file_name = data_base+'/training/fusion2/'+e+'/'+part+e.capitalize()+'linear.pkl'
         print('Save as ', file_name)
         fp = open(file_name, 'wb')
         pickle.dump(linear_data, fp)

@@ -30,21 +30,29 @@ def Load_Data(test_size=0):
     print('%d test  examples' % len(testData[0]))
     return trainData, validData, testData
 
-def load_fusion_data(path, label):
+def load_fusion_data(path, label,data_base):
     # -----------------------------Loading Data------------------------------
+    if data_base != 'AVEC2015':
+        set_path = path + '/recola_data/training/fusion/' + label +  '/'
+        trainfile = set_path + 'train' + label.capitalize()+'.pkl'
+        validfile = set_path + 'valid' + label.capitalize()+'.pkl'
+        testfile  = set_path + 'test' + label.capitalize()+'.pkl'
+    else:
+        set_path = path + '/training/fusion/' + label + '/'
+        trainfile = set_path + 'train' + label.capitalize() + '.pkl'
+        validfile = set_path + 'dev' + label.capitalize() + '.pkl'
+        testfile = set_path + 'dev' + label.capitalize() + '.pkl'
     print('-' * 20, 'Loading fusion Data', '-' * 20)
 
-    filepath = '/'.join([path, 'recola_data/training/fusion', label])
-
-    f_train = open(filepath + '/' + 'train' + label.capitalize() + '.pkl', 'rb')
+    f_train = open(trainfile, 'rb')
     trainData = pickle.load(f_train)
     f_train.close()
 
-    f_val = open(filepath + '/' + 'valid' + label.capitalize() + '.pkl', 'rb')
+    f_val = open(validfile, 'rb')
     validData = pickle.load(f_val)
     f_val.close()
 
-    f_test = open(filepath + '/' + 'test' + label.capitalize() + '.pkl', 'rb')
+    f_test = open(testfile, 'rb')
     testData = pickle.load(f_test)
     f_test.close()
 

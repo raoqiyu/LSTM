@@ -294,19 +294,45 @@ class LSTM(object):
             self.params += layer.params
             self.n_output = layer.n_output
             print("Add a attention lstm fusion layer. This layer must be the first layer in this code")
+        elif layer._name == 'attention_blstm_fusion':
+            assert (self.n_layer == 0)
+            layer.perform([self._input, self._input2],[self._input, self._input2])
+
+            self.n_input = layer.n_input
+            self.n_hiddens.append(layer.n_output)
+            self._output = layer.output
+            # Add this layer to the network
+            self.layers.append(layer)
+            self.n_layer += 1
+            self.params += layer.params
+            self.n_output = layer.n_output
+            print("Add a attention_blstm_fusion layer. This layer must be the first layer in this code")
+        elif layer._name == 'attention_blstm_fusion2':
+            assert (self.n_layer == 0)
+            layer.perform([self._input, self._input2],[self._input, self._input2])
+
+            self.n_input = layer.n_input
+            self.n_hiddens.append(layer.n_output)
+            self._output = layer.output
+            # Add this layer to the network
+            self.layers.append(layer)
+            self.n_layer += 1
+            self.params += layer.params
+            self.n_output = layer.n_output
+            print("Add a attention_blstm_fusion2 layer. This layer must be the first layer in this code")
     def setup(self, options):
         for k in options:
             assert (k in self.options)
             self.options[k] = options[k]
 
-    def compile(self, options):
+    def compile(self, options, Fusion=False):
         self.setup(options)
         print(self)
         # self.y_pred_prob = theano.function([self._input, self.mask], self._output,
         #                                    name='y_pred_prob')
         # self.y_pred = theano.function([self._input, self.mask],
         #                               self._output.argmax(axis=1), name='y_pred')
-        self.predict = theano.function([self._input,self._input2], self._output, name='predict')
+        #self.predict = theano.function([self._input,self._input2], self._output, name='predict')
         off = 1e-4
         if self._output.dtype == 'float16':
             off = 1e-2
@@ -342,17 +368,21 @@ class LSTM(object):
             L2_reg *= self.options["L2_penalty"]
             train_cost += L2_reg
         assert (self.options["optimizer"] is not None)
-        #self.train, self.update = self.options["optimizer"].compile(params=self.params,
-        #                                                            x=self.x,
-        #                                                            y=self.y,
-         #                                                           cost=train_cost,
-         #                                                           )
-        self.trainFusion, self.update = self.options["optimizer"].compile(params=self.params,
-                                                                    x1=self.x,
-                                                                    x2=self.x2,
-                                                                    y=self.y,
-                                                                    cost=train_cost,
-                                                                    )
+        if not Fusion:
+            self.predict = theano.function([self._input], self._output, name='predict')
+            self.train, self.update = self.options["optimizer"].compile(params=self.params,
+                                                                        x=self.x,
+                                                                        y=self.y,
+                                                                        cost=train_cost,
+                                                                       )
+        else:
+            self.predict = theano.function([self._input, self._input2], self._output, name='predict')
+            self.trainFusion, self.update = self.options["optimizer"].compile(params=self.params,
+                                                                        x1=self.x,
+                                                                        x2=self.x2,
+                                                                        y=self.y,
+                                                                        cost=train_cost,
+                                                                        )
 
     def save(self, file):
         print("Save model")
@@ -503,12 +533,12 @@ class LSTM(object):
                     if valid_ccc >= best_valid_CCC:
                         self.save(self.options["saveto"] + "_ccc.pkl")
                         print('Saving ccc model')
-                        best_valid_CCC = test_ccc
+                        best_valid_CCC = valid_ccc
                         bad_count = 0
 
                     # Early Stop
                     if (len(history_ccc) > self.options["patience"] and
-                                test_ccc >= np.array(history_ccc)[:-self.options["patience"],
+                                valid_ccc >= np.array(history_ccc)[:-self.options["patience"],
                                              2].min()):
                         bad_count += 1
                         if bad_count > self.options["patience"]:
@@ -527,10 +557,10 @@ class LSTM(object):
         with open(self.options["saveto"] + "_err_ccc.pkl", 'wb') as f:
             pickle.dump(history_ccc, f)
         # visualize(history_errors, ["train error", "valid error", "test error"], self.options["saveto"]+"_errors.eps")
-        test_rmse = np.array(history_rmse)[:, 2].min()
-        test_ccc = np.array(history_ccc)[:, 2].max()
-        print("\nThe Best test rmse:", test_rmse)
-        print("The Best test ccc:", test_ccc)
+        valid_rmse = np.array(history_rmse)[:, 2].min()
+        valid_ccc = np.array(history_ccc)[:, 2].max()
+        print("\nThe Best valid rmse:", valid_rmse)
+        print("The Best valid ccc:", valid_ccc)
 
         print('Test with best Param')
         self.load(self.options["saveto"] + "_ccc.pkl")
