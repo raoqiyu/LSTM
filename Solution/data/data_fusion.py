@@ -3,12 +3,15 @@ make audio and video data into one data for modality-fusion training
 
 """
 
-data_base = '.'
+data_base = './avec_data'
 import  pickle
 em = ['arousal', 'valence']
-feature = ['features_audio', 'features_video_appearance']
-parts = ['train', 'dev']
-#part = ['train', 'valid', 'test']
+if data_base == './avec_data':
+	feature = ['features_audio', 'features_video_appearance']
+	parts = ['train', 'dev']
+else:
+	feature = ['features_audio', 'features_video']
+	part = ['train', 'valid', 'test']
 
 for e in em:
     for part in parts:

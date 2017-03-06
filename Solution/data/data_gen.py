@@ -35,7 +35,7 @@ for duration in durations:
        shuffled_trainData = generateData(trainData, duration, n_skip)
        n_sample = len(shuffled_trainData)
 
-       filename =  "training/features_audio/valence/generated_train_" + str(duration) + "_" + str(n_skip) + "_" + str(n_sample) + ".pkl"
+       filename =  "avec_data/training/features_audio/valence/generated_train_" + str(duration) + "_" + str(n_skip) + "_" + str(n_sample) + ".pkl"
        if os.path.exists(filename):
             print("File exits. continue...")
             continue

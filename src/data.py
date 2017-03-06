@@ -161,7 +161,7 @@ def load_avec2015_data(path, feature, label, valid_size=3):
     # -----------------------------Loading Data------------------------------
     print('-' * 20, 'Loading Data', '-' * 20)
 
-    filepath = '/'.join([path, 'training', feature, label])
+    filepath = '/'.join([path, 'avec2015_data/training', feature, label])
 
     f_train = open(filepath + '/' + 'train' + label.capitalize() + '.pkl', 'rb')
     trainData = pickle.load(f_train)
@@ -181,7 +181,7 @@ def load_avec2015_data2(path, feature, label, valid_size=3):
     # -----------------------------Loading Data------------------------------
     print('-' * 20, 'Loading Data', '-' * 20)
 
-    filepath = '/'.join([path, 'training', feature, label])
+    filepath = '/'.join([path, 'avec2015_data/training', feature, label])
 
     f_train = open(filepath + '/' + 'train' + label.capitalize() + 'Second.pkl', 'rb')
     trainData = pickle.load(f_train)
@@ -200,7 +200,7 @@ def load_avec2015_data_norm(path, feature, label, valid_size=3):
     # -----------------------------Loading Data------------------------------
     print('-' * 20, 'Loading Data', '-' * 20)
 
-    filepath = '/'.join([path, 'training', feature, label])
+    filepath = '/'.join([path, 'avec2015_data/training', feature, label])
     print("trainData: _norm.pkl")
     f_train = open(filepath + '/' + 'train' + label.capitalize() + '_normed.pkl', 'rb')
     trainData = pickle.load(f_train)
@@ -221,7 +221,7 @@ def load_avec2015_data_pooling(path, feature, label, valid_size=3):
     # -----------------------------Loading Data------------------------------
     print('-' * 20, 'Loading Data', '-' * 20)
 
-    filepath = '/'.join([path, 'training', feature, label])
+    filepath = '/'.join([path, 'avec2015_data/training', feature, label])
     print("trainData: _pooling.pkl")
     f_train = open(filepath + '/' + 'train' + label.capitalize() + '_pooling.pkl', 'rb')
     trainData = pickle.load(f_train)
@@ -242,7 +242,7 @@ def load_avec2015_data_generated(path, feature, label, s_type):
     # -----------------------------Loading Data------------------------------
     print('-' * 20, 'Loading Data', '-' * 20)
     print('generated_train' + s_type)
-    filepath = '/'.join([path, 'training', feature, label])
+    filepath = '/'.join([path, 'avec2015_data/training', feature, label])
 
     f_train = open(filepath + '/' + 'train' + label.capitalize() + '.pkl', 'rb')
     trainData = pickle.load(f_train)
@@ -264,7 +264,7 @@ def load_avec2015_data_generated(path, feature, label, s_type):
 
 def load_avec2015_data_generated2(path, feature, label, s_type):
     # -----------------------------Loading Data------------------------------
-    print('-' * 20, 'Loading Data', '-' * 20)
+    print('-' * 20, 'avec2015_data/Loading Data', '-' * 20)
     print('generated_Stage2' + s_type)
     filepath = '/'.join([path, 'training', feature, label])
 
