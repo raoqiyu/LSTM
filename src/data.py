@@ -38,11 +38,15 @@ def load_fusion_data(path, label,data_base):
         validfile = set_path + 'valid' + label.capitalize()+'.pkl'
         testfile  = set_path + 'test' + label.capitalize()+'.pkl'
     else:
-        set_path = path + '/training/fusion/' + label + '/'
+        set_path = path + '/avec_data/training/fusion/' + label + '/'
         trainfile = set_path + 'train' + label.capitalize() + '.pkl'
         validfile = set_path + 'dev' + label.capitalize() + '.pkl'
         testfile = set_path + 'dev' + label.capitalize() + '.pkl'
     print('-' * 20, 'Loading fusion Data', '-' * 20)
+    print(set_path)
+    print(trainfile)
+    print(validfile)
+    print(testfile)
 
     f_train = open(trainfile, 'rb')
     trainData = pickle.load(f_train)

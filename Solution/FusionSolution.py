@@ -51,7 +51,7 @@ def linear_SVR(dim,data_base):
         validfile = set_path + 'valid' + dim.capitalize()+'linear.pkl'
         testfile  = set_path + 'test' + dim.capitalize()+'linear.pkl'
     else:
-        set_path = 'data/training/fusion2/' + dim + '/'
+        set_path = 'data/avec2015_data/training/fusion2/' + dim + '/'
         trainfile = set_path + 'train' + dim.capitalize() + 'linear.pkl'
         validfile = set_path + 'dev' + dim.capitalize() + 'linear.pkl'
         testfile = set_path + 'dev' + dim.capitalize() + 'linear.pkl'
